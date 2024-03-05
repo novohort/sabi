@@ -90,7 +90,7 @@ impl CPU {
     let upper_byte = self.fetch_opcode() as u16;
     let address = (upper_byte << 8) | lower_byte;
 
-    self.memory[address as usize] = self.a
+    self.memory[address as usize] = self.a;
     println!("OPCODE RAN: LD_NN_A");
   }
 
