@@ -100,6 +100,7 @@ impl CPU {
       0xCD => self.call_nn(),
       0xF0 => self.ldh_a_n(),
       0x47 => self.ldh_b_a(),
+      0x20 => self.jr_nz_n(),
       0xCB => {
         let cb_opcode = self.fetch_opcode();
         self.execute_cb_opcode(cb_opcode);
@@ -107,6 +108,16 @@ impl CPU {
       // add implementations for more opcodes later, here.
       _ => panic!("Unimplemented opcode: 0x{:02X}", opcode),
     }
+  }
+
+  fn jr_nz_n(&mut self) {
+    let n = self.fetch_opcode() as i8;
+
+    if !self.check_flag(Flag::Z) {
+      let jump_distance = i16::from(n);
+      self.pc = self.pc.wrapping_add(jump_distance as u16);
+    }
+    println!("OPCODE RAN: JR_NZ_N");
   }
 
   fn ldh_b_a(&mut self) {
