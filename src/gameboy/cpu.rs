@@ -85,9 +85,24 @@ impl CPU {
       0xF3 => self.di(),
       0xE0 => self.ldh_n_a(),
       0x3E => self.ld_a_n(),
+      0xCD => self.call_nn(),
       // add implementations for more opcodes later, here.
       _ => panic!("Unimplemented opcode: 0x{:02X}", opcode),
     }
+  }
+
+  fn call_nn(&mut self) {
+    let lower_byte = self.fetch_opcode() as u16;
+    let upper_byte = self.fetch_opcode() as u16;
+    let address = (upper_byte << 8) | lower_byte;
+
+    // push the current PC onto the stack. note that PC points to the next instruction
+    self.sp = self.sp.wrapping_sub(1);
+    self.memory[self.sp as usize] = ((self.pc >> 8) & 0xFF) as u8;
+    self.sp = self.sp.wrapping_sub(1);
+    self.memory[self.sp as usize] = (self.pc & 0xFF) as u8;
+
+    self.pc = address;
   }
 
   fn ld_a_n(&mut self) {
