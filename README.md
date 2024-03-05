@@ -1,4 +1,4 @@
-# Welcome to Sabi
+# What is Sabi
 
 In response to Nintendo slapping Yuzu with a fat lawsuit, we're creating Sabi as a new open source emulation platform. The goal for Sabi is, quite honestly, utterly fucking insane. We're aiming to be able to emulate a variety of systems, and we'd like to build for cross-platform compatibility. With that being said, while our goals are extremely ambitious, we're going to start small with the Gameboy — objectively one of the easier platforms to emulate.
 
