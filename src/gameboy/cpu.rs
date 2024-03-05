@@ -70,10 +70,7 @@ impl CPU {
     }
   }
 
-  /// 0x00 is for NOP. This opcode doesn't do anything.
-  /// 0xC3 is for JP nn. This is used to change the program counter (PC) to the address specified immediately after the opcode. It's a 3-byte instruction: the first byte is the opcode (0xC3), followed by two bytes that represent the address to jump to, in little-endian format (lower byte first).
-  /// 0xFE is for CP n. This instruction compares the value 'n' with the accumulator 'A' by subtracting 'n' from 'A' and setting the flags accordingly, but without actually changing the value of 'A'.
-  /// Flags affected: Z (zero flag): set if the result is 0. N (subtract flag) set to 1, indicating a subtraction operation. H (half carry flag): set if there is no borrow from bit 4. C (carry flag): set if there is no borrow.
+
   fn execute_opcode(&mut self, opcode: u8) {
     match opcode {
       0x00 => self.nop(),
