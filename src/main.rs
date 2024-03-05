@@ -1,3 +1,12 @@
+use rfd::FileDialog;
+
 fn main() {
-    println!("Hello, world!");
+    let file = FileDialog::new()
+        .add_filter("Game Boy Color ROM", &["gbc"])
+        .pick_file();
+
+    match file {
+        Some(path) => println!("Selected file: {:?}", path),
+        None => println!("No file selected."),
+    }
 }
