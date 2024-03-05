@@ -19,13 +19,20 @@ fn main() -> io::Result<()> {
 
             let mut cpu = CPU::new(rom);
 
-            // Placeholder for CPU emulation loop
-            // Replace with actual emulation loop later
-            let mut cpu_stepper: i16 = 0;
-            for _ in 0..10 { // Limiting steps for demonstration
+            // CPU emulation loop
+            let mut cpu_stepper: i64 = 0;
+            loop {
                 cpu.step();
-                cpu_stepper = cpu_stepper + 1;
-                println!("STEP: {:?}", cpu_stepper); // Modify this to output relevant CPU state information
+                cpu_stepper += 1;
+                println!("STEP: {}", cpu_stepper);  // modify this to output relevant CPU state info
+
+                // temp condition to break loop, will need to implement different logic later
+                // to decide when to stop the emulation (eg special keypress, exit opcode, etc)
+                // this is just a placeholder to illustrate breaking out of the loop
+                if cpu_stepper >= 1_000_000 {
+                    println!("reached 1 million steps, stopping emulation");    // this is an arbitrarily large number just for demonstration
+                    break;
+                }
             }
         },
         None => println!("No file selected."),
