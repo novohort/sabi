@@ -74,9 +74,15 @@ impl CPU {
 
   fn execute_cb_opcode(&mut self, opcode: u8) {
     match opcode {
+      0x87 => self.res_0_a(),
       // add other cb-prefixed opcodes here
       _ => panic!("Unimplemented CB opcode: 0x{:02X}", opcode)
     }
+  }
+
+  fn res_0_a(&mut self) {
+    self.a &= 0xFE; // clear bit 0 of register A
+    println!("CB OPCODE RAN: RES_0_A");
   }
 
   fn execute_opcode(&mut self, opcode: u8) {
