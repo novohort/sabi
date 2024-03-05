@@ -15,6 +15,7 @@ pub struct CPU {
   pc: u16,  // program counter
   // internal state
   memory: Vec<u8>,  // simplified memory model for now
+  ime: bool,  // interrupt master enable flag
 }
 
 pub enum Flag {
@@ -38,6 +39,7 @@ impl CPU {
       sp: 0xFFFE, // initial stack pointer value
       pc: 0x0100, // execution begins at 0x0100
       memory: rom,  // load the ROM into memory
+      ime: true,  // assume interrupts are enabled by default, adjust depending on needs;
     }
   }
 
@@ -80,9 +82,15 @@ impl CPU {
       0xAF => self.xor_a(),
       0x18 => self.jr_n(),
       0xEA => self.ld_nn_a(),
+      0xF3 => self.di(),
       // add implementations for more opcodes later, here.
       _ => panic!("Unimplemented opcode: 0x{:02X}", opcode),
     }
+  }
+
+  fn di(&mut self) {
+    self.ime = false; // disables interrupts by clearing the IME flag
+    println!("OPCODE RAN: DI");
   }
 
   fn ld_nn_a(&mut self) {
