@@ -2,7 +2,7 @@ use rfd::FileDialog;
 
 fn main() {
     let file = FileDialog::new()
-        .add_filter("Game Boy Color ROM", &["gbc"])
+        .add_filter("Game Boy ROM", &["gb"])
         .pick_file();
 
     match file {
