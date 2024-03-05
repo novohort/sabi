@@ -112,6 +112,7 @@ impl CPU {
       0x0E => self.ld_c_n(),
       0x06 => self.ld_b_n(),
       0x32 => self.ldd_hl_a(),
+      0x05 => self.dec_b(),
       0xCB => {
         let cb_opcode = self.fetch_opcode();
         self.execute_cb_opcode(cb_opcode);
@@ -119,6 +120,18 @@ impl CPU {
       // add implementations for more opcodes later, here.
       _ => panic!("Unimplemented opcode: 0x{:02X}", opcode),
     }
+  }
+
+  fn dec_b(&mut self) {
+    let half_carry = (self.b & 0x0F) == 0;
+
+    self.b = self.b.wrapping_sub(1);
+
+    self.set_flag(Flag::Z, self.b == 0);
+    self.set_flag(Flag::N, true);
+    self.set_flag(Flag::H, half_carry);
+    // the c flag isn't affected by DEC operations, so we don't have it here
+    println!("OPCODE RAN: DEC_B");
   }
 
   fn ldd_hl_a(&mut self) {
