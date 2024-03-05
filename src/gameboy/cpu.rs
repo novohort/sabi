@@ -83,9 +83,17 @@ impl CPU {
       0x18 => self.jr_n(),
       0xEA => self.ld_nn_a(),
       0xF3 => self.di(),
+      0xE0 => self.ldh_n_a(),
       // add implementations for more opcodes later, here.
       _ => panic!("Unimplemented opcode: 0x{:02X}", opcode),
     }
+  }
+
+  fn ldh_n_a(&mut self) {
+    let n = self.fetch_opcode() as u16;
+    let address = 0xFF00 + n;
+    self.memory[address as usize] = self.a;
+    println!("OPCODE RAN: LDF_N_A");
   }
 
   fn di(&mut self) {
