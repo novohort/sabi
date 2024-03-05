@@ -1,5 +1,7 @@
 // Game Boy specific CPU emulation
 
+use crate::gameboy::memory::Memory;
+
 pub struct CPU {
   // general purpose registers
   a: u8,  // accumulator
@@ -14,7 +16,7 @@ pub struct CPU {
   sp: u16,  // stack pointer
   pc: u16,  // program counter
   // internal state
-  memory: Vec<u8>,  // simplified memory model for now
+  memory: Memory,  // simplified memory model for now
   ime: bool,  // interrupt master enable flag
 }
 
@@ -27,6 +29,11 @@ pub enum Flag {
 
 impl CPU {
   pub fn new(rom: Vec<u8>) -> CPU {
+    let mut memory = Memory::new(0x10000);  // 64kb for the entire addressable space
+    // initialize rom loading into memory.data here
+    for (i, &byte) in rom.iter().enumerate() {
+      memory.write_byte(i as u16, byte);
+    }
     CPU {
       a: 0,
       f: 0,
@@ -38,7 +45,7 @@ impl CPU {
       l: 0,
       sp: 0xFFFE, // initial stack pointer value
       pc: 0x0100, // execution begins at 0x0100
-      memory: rom,  // load the ROM into memory
+      memory,  // load the ROM into memory
       ime: true,  // assume interrupts are enabled by default, adjust depending on needs;
     }
   }
@@ -49,8 +56,8 @@ impl CPU {
   }
 
   fn fetch_opcode(&mut self) -> u8 {
-    let opcode = self.memory[self.pc as usize];
-    self.pc += 1;
+    let opcode = self.memory.read_byte(self.pc);
+    self.pc = self.pc.wrapping_add(1);
     opcode
   }
 
@@ -116,7 +123,7 @@ impl CPU {
 
   fn ldd_hl_a(&mut self) {
     let hl_address = ((self.h as u16) << 8) | (self.l as u16);
-    self.memory[hl_address as usize] = self.a;
+    self.memory.write_byte(hl_address, self.a);
     let new_hl = hl_address.wrapping_sub(1);
     self.h = ((new_hl >> 8) & 0xFF) as u8;
     self.l = (new_hl & 0xFF) as u8;
@@ -161,8 +168,8 @@ impl CPU {
   fn ldh_a_n(&mut self) {
     let n = self.fetch_opcode() as u16;
     let address = 0xFF00 + n;
-    self.a = self.memory[address as usize];
-    println!("OPCODE RAN: LDH_A_N")
+    self.a = self.memory.read_byte(address);
+    println!("OPCODE RAN: LDH_A_N");
   }
 
   fn call_nn(&mut self) {
@@ -172,9 +179,9 @@ impl CPU {
 
     // push the current PC onto the stack. note that PC points to the next instruction
     self.sp = self.sp.wrapping_sub(1);
-    self.memory[self.sp as usize] = ((self.pc >> 8) & 0xFF) as u8;
+    self.memory.write_byte(self.sp, ((self.pc >> 8) & 0xFF) as u8);
     self.sp = self.sp.wrapping_sub(1);
-    self.memory[self.sp as usize] = (self.pc & 0xFF) as u8;
+    self.memory.write_byte(self.sp, (self.pc & 0xFF) as u8);
 
     self.pc = address;
     println!("OPCODE RAN: CALL_NN");
@@ -188,7 +195,7 @@ impl CPU {
   fn ldh_n_a(&mut self) {
     let n = self.fetch_opcode() as u16;
     let address = 0xFF00 + n;
-    self.memory[address as usize] = self.a;
+    self.memory.write_byte(address, self.a);
     println!("OPCODE RAN: LDF_N_A");
   }
 
@@ -202,7 +209,7 @@ impl CPU {
     let upper_byte = self.fetch_opcode() as u16;
     let address = (upper_byte << 8) | lower_byte;
 
-    self.memory[address as usize] = self.a;
+    self.memory.write_byte(address, self.a);
     println!("OPCODE RAN: LD_NN_A");
   }
 
