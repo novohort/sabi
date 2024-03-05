@@ -21,9 +21,11 @@ fn main() -> io::Result<()> {
 
             // Placeholder for CPU emulation loop
             // Replace with actual emulation loop later
+            let mut cpu_stepper: i16 = 0;
             for _ in 0..10 { // Limiting steps for demonstration
                 cpu.step();
-                println!("Emulation step executed"); // Modify this to output relevant CPU state information
+                cpu_stepper = cpu_stepper + 1;
+                println!("STEP: {:?}", cpu_stepper); // Modify this to output relevant CPU state information
             }
         },
         None => println!("No file selected."),

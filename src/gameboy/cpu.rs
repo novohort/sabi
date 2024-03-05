@@ -77,9 +77,21 @@ impl CPU {
       0xC3 => self.jp_nn(),
       0xFE => self.cp_n(),
       0x28 => self.jr_z_n(),
+      0xAF => self.xor_a(),
       // add implementations for more opcodes later, here.
       _ => panic!("Unimplemented opcode: 0x{:02X}", opcode),
     }
+  }
+
+  fn xor_a(&mut self) {
+    self.a ^= self.a; // this performs XOR on A with tiself, always results in 0
+
+    // reset A to 0, set Z flag, and reset N, H, and C flags
+    self.set_flag(Flag::Z, true); // a XOR A will always set the Z flag
+    self.set_flag(Flag::N, false);
+    self.set_flag(Flag::H, false);
+    self.set_flag(Flag::C, false);
+    println!("OPCODE RAN: XOR_A");
   }
 
   fn jr_z_n(&mut self) {
@@ -88,6 +100,7 @@ impl CPU {
       let jump_address = self.pc.wrapping_add(n as u16);
       self.pc = jump_address;
     }
+    println!("OPCODE RAN: JR_Z_N");
   }
 
   fn cp_n(&mut self) {
@@ -106,6 +119,7 @@ impl CPU {
 
     // set the carry flag if there is a borrow
     self.set_flag(Flag::C, a < n);
+    println!("OPCODE RAN: CP_N");
   }
 
   fn jp_nn(&mut self) {
@@ -113,9 +127,11 @@ impl CPU {
     let upper_byte = self.fetch_opcode() as u16;  // fetch the byte after that as the upper part of the address
     let new_address = (upper_byte << 8) | lower_byte; // combine the two bytes into a 16-bit address
     self.pc = new_address;  // set the program counter to the new address
+    println!("OPCODE RAN: JP_NN");
   }
   
   fn nop(&self) {
     // NOP does nothing
+    println!("OPCODE RAN: NOP");
   }
 }
