@@ -103,6 +103,7 @@ impl CPU {
     self.memory[self.sp as usize] = (self.pc & 0xFF) as u8;
 
     self.pc = address;
+    println!("OPCODE RAN: CALL_NN");
   }
 
   fn ld_a_n(&mut self) {
