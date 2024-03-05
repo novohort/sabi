@@ -10,6 +10,42 @@ We do not condone piracy.
 
 Sabi is a direct japanese translation for "rust", the language the emulator is built in. We thought it sounded cool, and we're terrible with names, so we're sticking with this.
 
+## A Warning To Any Lawyer (Especially Nintendo)
+
+Hello, friendo.
+
+![Hello, friendo.](image.png)
+
+While we do genuinely appreciate your keen interest in trying to shut down emulation (for whatever reason), let us remind you of one thing. There is no law against emulation. However, there are laws against piracy. We do not condone piracy, we condone emulation.
+
+Since there are no laws against emulation, this means that it's not explicitly illegal. By extension, this means it is fully legal.
+
+With that in mind, here is our automatic response to every single motherfucker that wants to try to shut this project down:
+
+![No](image-1.png)
+
+"Oh but we're gonna take Novohort to court!!"
+
+Lmfao.
+
+![No](image-1.png)
+
+"But you need to pay us millions of dollars!!"
+
+Again, lmfao.
+
+![No](image-1.png)
+
+"But but but.."
+
+Wanna read the paper again?
+
+![Dont make me tap the sign.](image-2.png)
+
+This project was inspired partly by the community-wide dissapointment (rage? sadness? idfk) felt by everyone after Yuzu and Citra were forced to shut down due to Nintendo's shenanigans.
+
+But Novohort as an entity honestly doesn't give a fuck. We recognize that everybody will one day cease to exist, so none of this really matters. Tell us to shut down as much as you want. We simply will just... well, not.
+
 ## TODO
 
 ### CPU Emulation
