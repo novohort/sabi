@@ -113,6 +113,7 @@ impl CPU {
       0x06 => self.ld_b_n(),
       0x32 => self.ldd_hl_a(),
       0x05 => self.dec_b(),
+      0x0D => self.dec_c(),
       0xCB => {
         let cb_opcode = self.fetch_opcode();
         self.execute_cb_opcode(cb_opcode);
@@ -132,6 +133,17 @@ impl CPU {
     self.set_flag(Flag::H, half_carry);
     // the c flag isn't affected by DEC operations, so we don't have it here
     println!("OPCODE RAN: DEC_B");
+  }
+
+  fn dec_c(&mut self) {
+    let half_carry = (self.c & 0x0F) == 0;
+
+    self.c = self.c.wrapping_sub(1);
+
+    self.set_flag(Flag::Z, self.c == 0);
+    self.set_flag(Flag::N, true);
+    self.set_flag(Flag::H, half_carry);
+    println!("OPCODE RAN: DEC_C");
   }
 
   fn ldd_hl_a(&mut self) {
