@@ -48,12 +48,20 @@ impl CPU {
   fn execute_opcode(&mut self, opcode: u8) {
     match opcode {
       0x00 => self.nop(),
+      0xC3 => self.jp_nn(),
       // add implementations for more opcodes later, here.
       _ => panic!("Unimplemented opcode: 0x{:02X}", opcode),
     }
   }
 
-  // opcode implementations
+  // implementation of the JP nn instruction
+  fn jp_nn(&mut self) {
+    let lower_byte = self.fetch_opcode() as u16;  // fetch the next byte as the lower part of the address
+    let upper_byte = self.fetch_opcode() as u16;  // fetch the byte after that as the upper part of the address
+    let new_address = (upper_byte << 8) | lower_byte; // combine the two bytes into a 16-bit address
+    self.pc = new_address;  // set the program counter to the new address
+  }
+  
   fn nop(&self) {
     // NOP does nothing
   }
