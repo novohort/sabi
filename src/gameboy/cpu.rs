@@ -104,6 +104,7 @@ impl CPU {
       0x21 => self.ld_hl_nn(),
       0x0E => self.ld_c_n(),
       0x06 => self.ld_b_n(),
+      0x32 => self.ldd_hl_a(),
       0xCB => {
         let cb_opcode = self.fetch_opcode();
         self.execute_cb_opcode(cb_opcode);
@@ -111,6 +112,15 @@ impl CPU {
       // add implementations for more opcodes later, here.
       _ => panic!("Unimplemented opcode: 0x{:02X}", opcode),
     }
+  }
+
+  fn ldd_hl_a(&mut self) {
+    let hl_address = ((self.h as u16) << 8) | (self.l as u16);
+    self.memory[hl_address as usize] = self.a;
+    let new_hl = hl_address.wrapping_sub(1);
+    self.h = ((new_hl >> 8) & 0xFF) as u8;
+    self.l = (new_hl & 0xFF) as u8;
+    println!("OPCODE RAN: LDD_HL_A");
   }
 
   fn ld_b_n(&mut self) {
