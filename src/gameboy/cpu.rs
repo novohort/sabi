@@ -61,6 +61,15 @@ impl CPU {
     }
   }
 
+  fn check_flag(&self, flag: Flag) -> bool {
+    match flag {
+      Flag::Z => (self.f & 0x80) != 0,
+      Flag::N => (self.f & 0x40) != 0,
+      Flag::H => (self.f & 0x20) != 0,
+      Flag::C => (self.f & 0x10) != 0,
+    }
+  }
+
   /// 0x00 is for NOP. This opcode doesn't do anything.
   /// 0xC3 is for JP nn. This is used to change the program counter (PC) to the address specified immediately after the opcode. It's a 3-byte instruction: the first byte is the opcode (0xC3), followed by two bytes that represent the address to jump to, in little-endian format (lower byte first).
   /// 0xFE is for CP n. This instruction compares the value 'n' with the accumulator 'A' by subtracting 'n' from 'A' and setting the flags accordingly, but without actually changing the value of 'A'.
@@ -70,8 +79,17 @@ impl CPU {
       0x00 => self.nop(),
       0xC3 => self.jp_nn(),
       0xFE => self.cp_n(),
+      0x28 => self.jr_z_n(),
       // add implementations for more opcodes later, here.
       _ => panic!("Unimplemented opcode: 0x{:02X}", opcode),
+    }
+  }
+
+  fn jr_z_n(&mut self) {
+    let n = self.fetch_opcode() as i8;
+    if self.check_flag(Flag::Z) {
+      let jump_address = self.pc.wrapping_add(n as u16);
+      self.pc = jump_address;
     }
   }
 
