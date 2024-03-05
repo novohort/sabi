@@ -72,6 +72,12 @@ impl CPU {
     }
   }
 
+  fn execute_cb_opcode(&mut self, opcode: u8) {
+    match opcode {
+      // add other cb-prefixed opcodes here
+      _ => panic!("Unimplemented CB opcode: 0x{:02X}", opcode)
+    }
+  }
 
   fn execute_opcode(&mut self, opcode: u8) {
     match opcode {
@@ -88,6 +94,10 @@ impl CPU {
       0xCD => self.call_nn(),
       0xF0 => self.ldh_a_n(),
       0x47 => self.ldh_b_a(),
+      0xCB => {
+        let cb_opcode = self.fetch_opcode();
+        self.execute_cb_opcode(cb_opcode);
+      }
       // add implementations for more opcodes later, here.
       _ => panic!("Unimplemented opcode: 0x{:02X}", opcode),
     }
