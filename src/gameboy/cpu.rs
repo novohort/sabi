@@ -101,6 +101,7 @@ impl CPU {
       0xF0 => self.ldh_a_n(),
       0x47 => self.ldh_b_a(),
       0x20 => self.jr_nz_n(),
+      0x21 => self.ld_hl_nn(),
       0xCB => {
         let cb_opcode = self.fetch_opcode();
         self.execute_cb_opcode(cb_opcode);
@@ -108,6 +109,14 @@ impl CPU {
       // add implementations for more opcodes later, here.
       _ => panic!("Unimplemented opcode: 0x{:02X}", opcode),
     }
+  }
+
+  fn ld_hl_nn(&mut self) {
+    let low = self.fetch_opcode();
+    let high = self.fetch_opcode();
+    self.h = high;
+    self.l = low;
+    println!("OPCODE RAN: LD_HL_NN");
   }
 
   fn jr_nz_n(&mut self) {
