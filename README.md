@@ -13,16 +13,16 @@ Sabi is a direct japanese translation for "rust", the language the emulator is b
 ## TODO
 
 ### CPU Emulation
-Interpret and execute GBC opcode instructions.
+Interpret and execute GBC opcode instructions. Will need to implement a basic fetch-decode-execute cycle that can read and execute a simple set of instructions (e.g., NOP, LD, JP).
 
 ### Memory management
-Emulate the GBC's memory model, including ROM, RAM, and memory-mapped I/O.
+Emulate the GBC's memory model, including ROM, RAM, and memory-mapped I/O. This will need a focus on ROM loading since we're gonna be loading `.gbc` files, and basic read/write functions to memory addresses.
 
 ### Graphics rendering
-Draw the screen contents by emulating the GBC's pixel processing unit.
+Draw the screen contents by emulating the GBC's pixel processing unit. The graphics system can be initially simple, just emulating the drawing of tiles and sprites to a frame buffer. May need to look into Rust graphics libraries such as `pixels` or `minifb` to display the contents of the frame buffer onto the screen.
 
 ### Input handling
-Capture and process user input as GBC button presses.
+Capture and process user input as GBC button presses. Could use `winit` maybe to help with creating a window and handling input.
 
 ### Sound emulation
-Replicate the GBC's sound synthesis.
+Eventually replicate the GBC's sound synthesis. Look into using something like `cpal` to implement sound.
