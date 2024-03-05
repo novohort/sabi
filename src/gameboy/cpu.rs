@@ -78,9 +78,26 @@ impl CPU {
       0xFE => self.cp_n(),
       0x28 => self.jr_z_n(),
       0xAF => self.xor_a(),
+      0x18 => self.jr_n(),
+      0xEA => self.ld_nn_a(),
       // add implementations for more opcodes later, here.
       _ => panic!("Unimplemented opcode: 0x{:02X}", opcode),
     }
+  }
+
+  fn ld_nn_a(&mut self) {
+    let lower_byte = self.fetch_opcode() as u16;
+    let upper_byte = self.fetch_opcode() as u16;
+    let address = (upper_byte << 8) | lower_byte;
+
+    self.memory[address as usize] = self.a
+    println!("OPCODE RAN: LD_NN_A");
+  }
+
+  fn jr_n(&mut self) {
+    let n = self.fetch_opcode() as i8;
+    self.pc = self.pc.wrapping_add(n as u16);
+    println!("OPCODE RAN: JR_N");
   }
 
   fn xor_a(&mut self) {
