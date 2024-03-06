@@ -32,9 +32,9 @@ impl CPU {
         memory.write_byte(0x8000, 0xAA); // write test value
         let test_byte = memory.read_byte(0x8000);
         assert_eq!(test_byte, 0xAA, "Memory read/write test failed.");
-        for i in 0x0000..0x8040 {
-            println!("{:X}: {:X}", i, memory.read_byte(i));
-        }
+        // for i in 0x0000..0x8040 {
+        //     println!("{:X}: {:X}", i, memory.read_byte(i));
+        // }
         // initialize rom loading into memory.data here
         for (i, &byte) in rom.iter().enumerate() {
             memory.write_byte(i as u16, byte);
@@ -88,44 +88,18 @@ impl CPU {
         }
     }
 
-    fn execute_cb_opcode(&mut self, opcode: u8) {
-        match opcode {
-            0x87 => self.res_0_a(),
-            // add other cb-prefixed opcodes here
-            _ => panic!("Unimplemented CB opcode: 0x{:02X}", opcode),
-        }
-    }
-
-    fn res_0_a(&mut self) {
-        self.a &= 0xFE; // clear bit 0 of register A
-    }
-
     fn execute_opcode(&mut self, opcode: u8) {
         match opcode {
             0x00 => self.nop(),
             0xC3 => self.jp_nn(),
-            0xFE => self.cp_n(),
-            0x28 => self.jr_z_n(),
             0xAF => self.xor_a(),
-            0x18 => self.jr_n(),
-            0xEA => self.ld_nn_a(),
-            0xF3 => self.di(),
-            0xE0 => self.ldh_n_a(),
-            0x3E => self.ld_a_n(),
-            0xCD => self.call_nn(),
-            0xF0 => self.ldh_a_n(),
-            0x47 => self.ldh_b_a(),
-            0x20 => self.jr_nz_n(),
             0x21 => self.ld_hl_nn(),
             0x0E => self.ld_c_n(),
             0x06 => self.ld_b_n(),
             0x32 => self.ldd_hl_a(),
             0x05 => self.dec_b(),
+            0x20 => self.jr_nz_n(),
             0x0D => self.dec_c(),
-            0xCB => {
-                let cb_opcode = self.fetch_opcode();
-                self.execute_cb_opcode(cb_opcode);
-            }
             // add implementations for more opcodes later, here.
             _ => panic!("Unimplemented opcode: 0x{:02X}", opcode),
         }
@@ -186,58 +160,6 @@ impl CPU {
         }
     }
 
-    fn ldh_b_a(&mut self) {
-        self.b = self.a;
-    }
-
-    fn ldh_a_n(&mut self) {
-        let n = self.fetch_opcode() as u16;
-        let address = 0xFF00 + n;
-        self.a = self.memory.read_byte(address);
-    }
-
-    fn call_nn(&mut self) {
-        let lower_byte = self.fetch_opcode() as u16;
-        let upper_byte = self.fetch_opcode() as u16;
-        let address = (upper_byte << 8) | lower_byte;
-
-        // push the current PC onto the stack. note that PC points to the next instruction
-        self.sp = self.sp.wrapping_sub(1);
-        self.memory
-            .write_byte(self.sp, ((self.pc >> 8) & 0xFF) as u8);
-        self.sp = self.sp.wrapping_sub(1);
-        self.memory.write_byte(self.sp, (self.pc & 0xFF) as u8);
-
-        self.pc = address;
-    }
-
-    fn ld_a_n(&mut self) {
-        self.a = self.fetch_opcode();
-    }
-
-    fn ldh_n_a(&mut self) {
-        let n = self.fetch_opcode() as u16;
-        let address = 0xFF00 + n;
-        self.memory.write_byte(address, self.a);
-    }
-
-    fn di(&mut self) {
-        self.ime = false; // disables interrupts by clearing the IME flag
-    }
-
-    fn ld_nn_a(&mut self) {
-        let lower_byte = self.fetch_opcode() as u16;
-        let upper_byte = self.fetch_opcode() as u16;
-        let address = (upper_byte << 8) | lower_byte;
-
-        self.memory.write_byte(address, self.a);
-    }
-
-    fn jr_n(&mut self) {
-        let n = self.fetch_opcode() as i8;
-        self.pc = self.pc.wrapping_add(n as u16);
-    }
-
     fn xor_a(&mut self) {
         self.a ^= self.a; // this performs XOR on A with tiself, always results in 0
 
@@ -246,32 +168,6 @@ impl CPU {
         self.set_flag(Flag::N, false);
         self.set_flag(Flag::H, false);
         self.set_flag(Flag::C, false);
-    }
-
-    fn jr_z_n(&mut self) {
-        let n = self.fetch_opcode() as i8;
-        if self.check_flag(Flag::Z) {
-            let jump_address = self.pc.wrapping_add(n as u16);
-            self.pc = jump_address;
-        }
-    }
-
-    fn cp_n(&mut self) {
-        let n = self.fetch_opcode();
-        let a = self.a;
-        let result = a.wrapping_sub(n);
-
-        // set the zero flag if the result is 0
-        self.set_flag(Flag::Z, result == 0);
-
-        // set the subtract flag if the operation is a subtraction
-        self.set_flag(Flag::N, true);
-
-        // set the half carry flag if borrow from bit 4 occurred
-        self.set_flag(Flag::H, (a & 0xF) < (n & 0xF));
-
-        // set the carry flag if there is a borrow
-        self.set_flag(Flag::C, a < n);
     }
 
     fn jp_nn(&mut self) {
