@@ -28,11 +28,9 @@ pub enum Flag {
 impl CPU {
     pub fn new(rom: Vec<u8>) -> CPU {
         let mut memory = Memory::new(0x10000); // 64kb for the entire addressable space
-        memory.load_rom("C:\\Users\\dishpit\\Downloads\\Tetris (JUE) (V1.1) [!]\\Tetris.gb");
-        memory.write_byte(0x8000, 0xAA); // write test value
-        let test_byte = memory.read_byte(0x8000);
-        assert_eq!(test_byte, 0xAA, "Memory read/write test failed.");
-        // for i in 0x0000..0x8040 {
+
+        // uncomment this to view tile vram shit
+        // for i in 0x8000..0x8040 {
         //     println!("{:X}: {:X}", i, memory.read_byte(i));
         // }
         // initialize rom loading into memory.data here
